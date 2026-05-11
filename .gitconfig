@@ -1,0 +1,22 @@
+[user]
+	email = allispaul@gmail.com
+	name = Paul VanKoughnett
+[credential]
+	helper = store
+[core]
+	editor = vim
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+	trustExitCode = true
+[difftool "vimdiff"]
+	cmd = vimdiff "$LOCAL" "$REMOTE"
+	trustExitCode = true
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[init]
+	defaultBranch = main
