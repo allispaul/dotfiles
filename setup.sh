@@ -17,6 +17,7 @@ DOTFILES=(
     .gdbinit
     .gitconfig
     .spacemacs
+    .tmux.conf
     .vimrc
 )
 
