@@ -13,6 +13,7 @@ BACKUP_DIR="$DOTFILES_DIR/backup/$(date +%Y%m%d_%H%M%S)"
 DOTFILES=(
     .bash_logout
     .bash_profile
+    .bashrc
     .gdbinit
     .gitconfig
     .spacemacs
