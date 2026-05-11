@@ -17,7 +17,6 @@ DOTFILES=(
     .gdbinit
     .gitconfig
     .spacemacs
-    .spacemacs.env
     .vimrc
 )
 
