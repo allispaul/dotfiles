@@ -19,6 +19,7 @@ DOTFILES=(
     .spacemacs
     .tmux.conf
     .vimrc
+    .config/nvim/init.lua
 )
 
 echo "Dotfiles dir: $DOTFILES_DIR"
@@ -37,7 +38,7 @@ for file in "${DOTFILES[@]}"; do
 
     # If something already exists at the destination, back it up
     if [[ -e "$dest" && ! -L "$dest" ]]; then
-        mkdir -p "$BACKUP_DIR"
+        mkdir -p "$BACKUP_DIR/$(dirname "$file")"
         echo "Backing up existing $dest -> $BACKUP_DIR/$file"
         mv "$dest" "$BACKUP_DIR/$file"
     fi
@@ -50,6 +51,7 @@ for file in "${DOTFILES[@]}"; do
     ln -s "$src" "$dest"
     echo "Linked $dest -> $src"
 done
+
 
 echo ""
 echo "Done."
