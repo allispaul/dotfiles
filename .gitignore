@@ -1,1 +1,18 @@
 backup/
+
+# Neovim / LazyVim
+# installed plugin sources — regenerated from lazy-lock.json
+/lazy/
+
+# session, shada, swap, undo, view dirs if they end up here
+/sessions/
+/shada/
+/swap/
+/undo/
+/view/
+
+# spell files Neovim downloads
+/spell/
+
+# LSP / Mason installs — these are big and machine-specific
+/mason/

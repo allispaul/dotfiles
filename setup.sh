@@ -19,7 +19,7 @@ DOTFILES=(
     .spacemacs
     .tmux.conf
     .vimrc
-    .config/nvim/init.lua
+    .config/nvim
 )
 
 echo "Dotfiles dir: $DOTFILES_DIR"
