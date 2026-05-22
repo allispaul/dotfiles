@@ -18,17 +18,6 @@ export PATH="$PATH:$HOME/.local/bin"
 export BROWSER="firefox"
 export VCPKG_ROOT=$HOME/.local/share/vcpkg
 
-# make new terminal tabs open from cwd
-source /etc/profile.d/vte.sh
-
-# # make new terminal tabs activate python venv
-# if [[ -f .venv/bin/activate ]] ; then
-# source .venv/bin/activate
-# fi
-
-# keyboard repeat rate -- how to set this at startup?
-xset r rate 350 20
-
 # Set options for gcc
 alias gpc='gcc -Wall -Wextra -Wpedantic -std=c23 -g -lm'
 alias gpp='g++ -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=c++20 -g'
