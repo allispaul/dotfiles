@@ -22,6 +22,9 @@ export VCPKG_ROOT=$HOME/.local/share/vcpkg
 alias gpc='gcc -Wall -Wextra -Wpedantic -std=c23 -g -lm'
 alias gpp='g++ -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=c++20 -g'
 
+# Copy to clipboard
+alias clip='xclip -selection clipboard'
+
 ### Bash-it config
 # If not running interactively, don't do anything
 case $- in
