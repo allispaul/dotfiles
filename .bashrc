@@ -25,6 +25,9 @@ alias gpp='g++ -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=c++2
 # Copy to clipboard
 alias clip='xclip -selection clipboard'
 
+# Other utilities
+alias killstop='kill -9 $(jobs -p -s)'
+
 ### Bash-it config
 # If not running interactively, don't do anything
 case $- in
