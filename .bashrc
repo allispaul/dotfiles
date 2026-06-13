@@ -115,3 +115,13 @@ if [[ -e "$BASH_IT" ]]; then
 fi
 
 eval "$(uv generate-shell-completion bash)"
+
+export PATH=$HOME/neovim/bin:$PATH
+export PATH=/opt/nvidia/nsight-compute/2025.3.1:$PATH
+export PATH=/opt/nvidia/nsight-systems/2025.3.1:$PATH
+
+# Run machine-specific setup
+if [[ -e "$HOME/.bashrc_local" ]]; then
+    source $HOME/.bashrc_local
+fi
+
