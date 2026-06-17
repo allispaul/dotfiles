@@ -36,7 +36,10 @@ fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+[ -f ~/.cargo/env ] && source ~/.cargo/env
+
 # Run machine-specific setup
 if [[ -e "$HOME/.bashrc_local" ]]; then
   source $HOME/.bashrc_local
 fi
+. "$HOME/.cargo/env"
