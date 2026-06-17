@@ -34,6 +34,8 @@ if command -v zoxide &>/dev/null; then
   eval "$(zoxide init bash)"
 fi
 
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
 # Run machine-specific setup
 if [[ -e "$HOME/.bashrc_local" ]]; then
   source $HOME/.bashrc_local
