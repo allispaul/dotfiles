@@ -2,6 +2,8 @@
 # ~/.bashrc
 #
 
+HOME_DIR="$HOME"
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -34,12 +36,11 @@ if command -v zoxide &>/dev/null; then
   eval "$(zoxide init bash)"
 fi
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+[ -f "${HOME_DIR}/fzf.bash" ] && source "${HOME_DIR}/.fzf.bash"
 
-[ -f ~/.cargo/env ] && source ~/.cargo/env
+[ -f "${HOME_DIR}/.cargo/env" ] && source "${HOME_DIR}/.cargo/env"
 
 # Run machine-specific setup
-if [[ -e "$HOME/.bashrc_local" ]]; then
-  source $HOME/.bashrc_local
+if [[ -e "$HOME_DIR/.bashrc_local" ]]; then
+  source "$HOME_DIR/.bashrc_local"
 fi
-. "$HOME/.cargo/env"
