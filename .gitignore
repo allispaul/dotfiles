@@ -16,3 +16,6 @@ backup/
 
 # LSP / Mason installs — these are big and machine-specific
 /mason/
+
+# MacOS
+.DS_Store

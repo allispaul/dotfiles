@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 # ~/.bashrc
 #
@@ -30,17 +32,44 @@ alias clip='xclip -selection clipboard'
 # Other utilities
 alias killstop='kill -9 $(jobs -p -s)'
 
-eval "$(uv generate-shell-completion bash)"
-
 if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init bash)"
+  eval "$(zoxide init bash --cmd cd)"
 fi
 
-[ -f "${HOME_DIR}/fzf.bash" ] && source "${HOME_DIR}/.fzf.bash"
+if command -v eza &>/dev/null; then
+  alias l='eza -la --git --icons --group-directories-first'
+fi
 
-[ -f "${HOME_DIR}/.cargo/env" ] && source "${HOME_DIR}/.cargo/env"
+if command -v bat &>/dev/null; then
+  alias cat='bat -pp'
+fi
+
+if command -v batman &>/dev/null; then
+  alias man='batman'
+fi
+
+if command -v fd &>/dev/null; then
+  alias v='fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs -0 nvim'
+fi
+
+if command -v nvim &>/dev/null; then
+  alias vim='nvim'
+fi
+
+if [[ -f $HOME/.fzf.bash ]]; then
+  source "$HOME/.fzf.bash"
+fi
+
+if [[ -f $HOME/.cargo.env ]]; then
+  source "$HOME/.cargo.env"
+fi
+
+eval "$(uv generate-shell-completion bash)"
+
+# Silence mac insistence on zsh
+export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Run machine-specific setup
-if [[ -e "$HOME_DIR/.bashrc_local" ]]; then
-  source "$HOME_DIR/.bashrc_local"
+if [[ -e "$HOME/.bashrc_local" ]]; then
+  source "$HOME/.bashrc_local"
 fi
