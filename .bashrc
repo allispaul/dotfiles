@@ -39,6 +39,9 @@ fi
 
 alias killstop='kill -9 $(jobs -p -s)'
 
+# print PATH separated into newlines
+alias path='echo -e ${PATH//:/\\n}'
+
 if command -v eza &>/dev/null; then
   alias l='eza -la --git --icons --group-directories-first'
 fi
