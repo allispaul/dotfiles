@@ -4,8 +4,6 @@
 # ~/.bashrc
 #
 
-HOME_DIR="$HOME"
-
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -22,19 +20,24 @@ export PATH="$PATH:$HOME/.local/bin"
 export BROWSER="firefox"
 export VCPKG_ROOT=$HOME/.local/share/vcpkg
 
-# Set options for gcc
+# Command aliases
+# gcc
 alias gpc='gcc -Wall -Wextra -Wpedantic -std=c23 -g -lm'
 alias gpp='g++ -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=c++20 -g'
 
+# git
+alias gs='git status'
+alias ga='git add -u && git status'
+
+# handle typos
+alias sl='ls'
+
 # Copy to clipboard
-alias clip='xclip -selection clipboard'
-
-# Other utilities
-alias killstop='kill -9 $(jobs -p -s)'
-
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init bash --cmd cd)"
+if command -v xclip &>/dev/null; then
+  alias clip='xclip -selection clipboard'
 fi
+
+alias killstop='kill -9 $(jobs -p -s)'
 
 if command -v eza &>/dev/null; then
   alias l='eza -la --git --icons --group-directories-first'
@@ -54,6 +57,15 @@ fi
 
 if command -v nvim &>/dev/null; then
   alias vim='nvim'
+fi
+
+# Bash tool integration setup
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init bash --cmd cd)"
+fi
+
+if command -v fzf &>/dev/null; then
+  eval "$(fzf --bash)"
 fi
 
 if [[ -f $HOME/.fzf.bash ]]; then
