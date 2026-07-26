@@ -1,0 +1,42 @@
+#! /usr/bin/env false
+# Note, this script should be source'd, not invoked as a command.
+# Therefore, invocation as a command returns an error code 1.
+
+if [ -z "$PS1ORIG" ]; then
+  export PS1ORIG="$PS1"
+fi
+
+__build_prompt() {
+  STATUS=$?
+
+  # double back-slashes b/c we're using "echo -e"
+  ERRRES='\\e[0;37;41m' # white on red
+  OKRES='\\e[0;32m'     # green
+  NUSER=''              # non-root user, default
+  RUSER='\\e[1m'        # root user, bold
+  P='\\e[0m'            # reset to default (plain) text
+
+  # here goes
+  if [ $STATUS -eq 0 ]; then
+    RESCOLOR="$OKRES"
+  else
+    RESCOLOR="$ERRRES"
+  fi
+
+  if [ $EUID -eq 0 ]; then
+    UCOLOR="$RUSER"
+  else
+    UCOLOR="$NUSER"
+  fi
+  # dump the prompt string for later capture
+  # (a serious case of leaning toothpicks)
+  echo -en "\\[${RESCOLOR}\\]${STATUS}\\[${P}\\] \\[${UCOLOR}\\]\\u@\\h:\\w\\$ \\[${P}\\]"
+}
+
+default_prompt() {
+  export PS1="$PS1ORIG"
+  unset PROMPT_COMMAND PS1ORIG
+}
+
+export PROMPT_COMMAND="PS1=\"\$(__build_prompt)\""
+export -f __build_prompt default_prompt

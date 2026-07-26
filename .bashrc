@@ -1,18 +1,10 @@
-#!/bin/bash
-
-#
-# ~/.bashrc
-#
+#!/usr/bin/env bash
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
 # Set vim keybindings
 set -o vi
-
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
-PS1='\u@\h: \W\$ '
 
 export MANPATH="/usr/local/texlive/2023/texmf-dist/doc/man:$MANPATH"
 export INFOPATH="/usr/local/texlive/2023/texmf-dist/doc/info:$INFOPATH"
@@ -21,6 +13,10 @@ export BROWSER="firefox"
 export VCPKG_ROOT=$HOME/.local/share/vcpkg
 
 # Command aliases
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+
 # gcc
 alias gpc='gcc -Wall -Wextra -Wpedantic -std=c23 -g -lm'
 alias gpp='g++ -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=c++20 -g'
@@ -63,28 +59,30 @@ if command -v nvim &>/dev/null; then
 fi
 
 # Bash tool integration setup
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init bash --cmd cd)"
-fi
 
 if command -v fzf &>/dev/null; then
   eval "$(fzf --bash)"
 fi
 
-if [[ -f $HOME/.fzf.bash ]]; then
-  source "$HOME/.fzf.bash"
-fi
+# shellcheck disable=SC1091
+[[ -f "$HOME/.fzf.bash" ]] && source "$HOME/.fzf.bash"
 
-if [[ -f $HOME/.cargo.env ]]; then
-  source "$HOME/.cargo.env"
-fi
+# shellcheck disable=SC1091
+[[ -f "$HOME/.cargo.env" ]] && source "$HOME/.cargo.env"
 
 eval "$(uv generate-shell-completion bash)"
 
 # Silence mac insistence on zsh
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
-# Run machine-specific setup
-if [[ -e "$HOME/.bashrc_local" ]]; then
-  source "$HOME/.bashrc_local"
+# Set prompt command
+[[ -f "$HOME/.bash_prompt" ]] && source "$HOME/.bash_prompt"
+
+# Finally, run machine-specific setup
+# shellcheck disable=SC1091
+[[ -f "$HOME/.bashrc_local" ]] && source "$HOME/.bashrc_local"
+
+# zoxide init wants to go last
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init bash --cmd cd)"
 fi
