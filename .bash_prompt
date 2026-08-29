@@ -6,31 +6,60 @@ if [ -z "$PS1ORIG" ]; then
   export PS1ORIG="$PS1"
 fi
 
+# ---------------------------------------------------------------------------
+# Renders a two-line prompt:
+#
+#     <blank line>
+#     [ 0 ] user@host ~/some/path                      <- reverse-video bar
+#     $ _                                              <- you type here
+#
+# The bar uses reverse video (SGR 7) rather than a foreground colour, because
+# reverse video is something ordinary command output almost never emits.
+# ---------------------------------------------------------------------------
+
 __build_prompt() {
-  STATUS=$?
+  # Must be the very first line: it captures the exit status of whatever the
+  # user just ran, before anything in here overwrites it.
+  local status=$?
 
-  # double back-slashes b/c we're using "echo -e"
-  ERRRES='\\e[0;37;41m' # white on red
-  OKRES='\\e[0;32m'     # green
-  NUSER=''              # non-root user, default
-  RUSER='\\e[1m'        # root user, bold
-  P='\\e[0m'            # reset to default (plain) text
+  # Each fragment below is complete and ready to concatenate.  The \[ ... \]
+  # markers tell bash "the bytes in here occupy zero columns"; without them
+  # bash miscounts the prompt width, and long command lines wrap in the wrong
+  # place while Ctrl-R redraws garbage.
+  #
+  # PS1 itself understands \e, so we can hand it the two characters \ and e
+  # verbatim.
+  local plain='\[\e[0m\]'       # reset all attributes
+  local bar='\[\e[7;1m\]'
+  local barbold='\[\e[7;1m\]'   # reverse video, bold (root)
+  local ok='\[\e[30;42m\]'      # black on green
+  local err='\[\e[97;41m\]'     # bright white on red
+  local clreol='\[\e[K\]'       # erase to end of line
 
-  # here goes
-  if [ $STATUS -eq 0 ]; then
-    RESCOLOR="$OKRES"
+  # Pick the badge colour from the exit status.
+  local badgecolor
+  if [ "$status" -eq 0 ]; then
+    badgecolor="$ok"
   else
-    RESCOLOR="$ERRRES"
+    badgecolor="$err"
   fi
 
-  if [ $EUID -eq 0 ]; then
-    UCOLOR="$RUSER"
+  # Pick the bar weight from the user.
+  local barcolor
+  if [ "$EUID" -eq 0 ]; then
+    barcolor="$barbold"
   else
-    UCOLOR="$NUSER"
+    barcolor="$bar"
   fi
-  # dump the prompt string for later capture
-  # (a serious case of leaning toothpicks)
-  echo -en "\\[${RESCOLOR}\\]${STATUS}\\[${P}\\] \\[${UCOLOR}\\]\\u@\\h:\\w\\$ \\[${P}\\]"
+
+  # Assemble
+  local badge="${badgecolor} ${status} ${plain}"
+  local info="${barcolor} \u@\h \w ${plain}"
+
+  # clreol keeps the bar's trailing edge clean after a window resize.
+  # The final \$ is single-quoted so it survives as a prompt escape (# for
+  # root, $ otherwise) instead of being eaten as a variable reference.
+  PS1="${plain}\n${badge}${info}${clreol}\n"'\$ '
 }
 
 default_prompt() {
@@ -38,5 +67,5 @@ default_prompt() {
   unset PROMPT_COMMAND PS1ORIG
 }
 
-export PROMPT_COMMAND="PS1=\"\$(__build_prompt)\""
+export PROMPT_COMMAND="__build_prompt"
 export -f __build_prompt default_prompt

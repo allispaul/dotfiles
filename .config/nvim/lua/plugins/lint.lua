@@ -7,6 +7,8 @@ return {
       events = { "BufWritePost", "BufReadPost", "InsertLeave" },
       linters_by_ft = {
         bash = { "shellcheck" },
+        sh = { "shellcheck" },
+        python = { "ruff" },
       },
     },
   },
