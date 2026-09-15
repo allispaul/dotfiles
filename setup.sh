@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# bootstrap.sh — create home directory symlinks for dotfiles
-# Run from the root of your dotfiles repo.
-# Usage: ./bootstrap.sh
-
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,6 +11,7 @@ DOTFILES=(
   .bash_profile
   .bash_prompt
   .bashrc
+  .clang-format
   .gdbinit
   .gitconfig
   .spacemacs
