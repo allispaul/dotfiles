@@ -5,7 +5,7 @@ return {
       servers = {
         clangd = {
           cmd = {
-            "/usr/bin/clangd",
+            "/opt/homebrew/opt/llvm/bin/clangd",
             "--background-index",
             "--clang-tidy",
             "--header-insertion=iwyu",
