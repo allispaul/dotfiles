@@ -86,3 +86,9 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init bash --cmd cd)"
 fi
+
+# proto
+if [ -d "$HOME/.proto" ]; then
+  export PROTO_HOME="$HOME/.proto"
+  export PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH"
+fi
