@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
-# Homebrew (set up before the interactive check so non-interactive shells get it too)
+# PATH setup (before the interactive check so non-interactive shells get it too)
 case "$(uname -s)" in
-Darwin) BREW_BIN="/opt/homebrew/bin/brew" ;;
-Linux) BREW_BIN="/home/linuxbrew/.linuxbrew/bin/brew" ;;
+Darwin)
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    [[ -d "$HOMEBREW_PREFIX/opt/llvm/bin" ]] && export PATH="$HOMEBREW_PREFIX/opt/llvm/bin:$PATH"
+  fi
+  export PATH="$PATH:$HOME/.local/bin"
+  ;;
+Linux)
+  # setup.sh installs tools here; let them take precedence over system packages
+  export PATH="$HOME/.local/bin:$PATH"
+  ;;
 esac
-if [[ -x "$BREW_BIN" ]]; then
-  eval "$("$BREW_BIN" shellenv)"
-  [[ -d "$HOMEBREW_PREFIX/opt/llvm/bin" ]] && export PATH="$HOMEBREW_PREFIX/opt/llvm/bin:$PATH"
-fi
-unset BREW_BIN
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -19,7 +23,6 @@ set -o vi
 
 export MANPATH="/usr/local/texlive/2023/texmf-dist/doc/man:$MANPATH"
 export INFOPATH="/usr/local/texlive/2023/texmf-dist/doc/info:$INFOPATH"
-export PATH="$PATH:$HOME/.local/bin"
 export BROWSER="firefox"
 export VCPKG_ROOT=$HOME/.local/share/vcpkg
 
