@@ -28,6 +28,11 @@ if [[ "$(uname -s)" == "Linux" ]]; then
     export LANG=C.UTF-8
   fi
   export COLORTERM="${COLORTERM:-truecolor}"
+  # `kubectl exec -t` doesn't forward TERM; the container runtime sets a bare
+  # "xterm", which makes tmux squash everything to 8 colors
+  if [[ -z "${TMUX:-}" && "${TERM:-}" == "xterm" ]]; then
+    export TERM=xterm-256color
+  fi
 fi
 
 # If not running interactively, don't do anything
