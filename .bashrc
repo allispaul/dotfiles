@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
 
 # PATH setup (before the interactive check so non-interactive shells get it too)
-case "$(uname -s)" in
-Darwin)
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    [[ -d "$HOMEBREW_PREFIX/opt/llvm/bin" ]] && export PATH="$HOMEBREW_PREFIX/opt/llvm/bin:$PATH"
-  fi
-  export PATH="$PATH:$HOME/.local/bin"
-  ;;
-Linux)
-  # setup.sh installs tools here; let them take precedence over system packages
-  export PATH="$HOME/.local/bin:$PATH"
-  ;;
-esac
+if [[ "$(uname -s)" == "Darwin" && -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  [[ -d "$HOMEBREW_PREFIX/opt/llvm/bin" ]] && export PATH="$HOMEBREW_PREFIX/opt/llvm/bin:$PATH"
+fi
+
+# Always put ~/.local/bin on PATH exactly once. On Linux, setup.sh installs tools
+# there, so it goes first to take precedence over system packages; on macOS it
+# goes last so Homebrew's tools win.
+LOCAL_BIN="$HOME/.local/bin"
+PATH=":$PATH:"
+PATH="${PATH//":$LOCAL_BIN:"/:}"
+PATH="${PATH#:}"
+PATH="${PATH%:}"
+if [[ "$(uname -s)" == "Linux" ]]; then
+  export PATH="$LOCAL_BIN${PATH:+:$PATH}"
+else
+  export PATH="${PATH:+$PATH:}$LOCAL_BIN"
+fi
+unset LOCAL_BIN
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
