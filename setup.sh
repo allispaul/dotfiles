@@ -51,4 +51,49 @@ for file in "${DOTFILES[@]}"; do
 done
 
 echo ""
+
+# Install Homebrew if it isn't already installed
+if ! command -v brew &>/dev/null; then
+  echo "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Make sure brew is on PATH for the rest of this script
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+BREW_FORMULAE=(
+  bash
+  bat
+  bat-extras
+  eza
+  fd
+  fzf
+  git-lfs
+  llvm
+  neovim
+  ripgrep
+  tmux
+  uv
+  zoxide
+)
+
+BREW_CASKS=(
+  claude-code
+)
+
+echo "Installing Homebrew packages..."
+brew install "${BREW_FORMULAE[@]}"
+brew install --cask "${BREW_CASKS[@]}"
+
+# Install proto if it isn't already installed (.bashrc handles PATH setup)
+if [[ ! -x "$HOME/.proto/bin/proto" ]]; then
+  echo "Installing proto..."
+  bash <(curl -fsSL https://moonrepo.dev/install/proto.sh) --yes --no-modify-profile
+fi
+
+echo ""
 echo "Done."
