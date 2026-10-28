@@ -14,7 +14,6 @@ DOTFILES=(
   .clang-format
   .gdbinit
   .gitconfig
-  .spacemacs
   .tmux.conf
   .vimrc
   .config/nvim
