@@ -52,18 +52,25 @@ done
 
 echo ""
 
+# Homebrew's install location depends on the OS (matches .bashrc)
+OS="$(uname -s)"
+case "$OS" in
+Darwin) BREW_BIN="/opt/homebrew/bin/brew" ;;
+Linux) BREW_BIN="/home/linuxbrew/.linuxbrew/bin/brew" ;;
+*)
+  echo "ERROR: unsupported OS $OS"
+  exit 1
+  ;;
+esac
+
 # Install Homebrew if it isn't already installed
-if ! command -v brew &>/dev/null; then
+if [[ ! -x "$BREW_BIN" ]]; then
   echo "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# Make sure brew is on PATH for the rest of this script
-if [[ -x /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -x /usr/local/bin/brew ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
+# Put brew on PATH for the rest of this script
+eval "$("$BREW_BIN" shellenv)"
 
 BREW_FORMULAE=(
   bash
@@ -86,8 +93,15 @@ BREW_CASKS=(
 )
 
 echo "Installing Homebrew packages..."
-brew install "${BREW_FORMULAE[@]}"
-brew install --cask "${BREW_CASKS[@]}"
+"$BREW_BIN" install "${BREW_FORMULAE[@]}"
+
+# Casks are macOS-only; on Linux, use Claude Code's own installer instead
+if [[ "$OS" == "Darwin" ]]; then
+  "$BREW_BIN" install --cask "${BREW_CASKS[@]}"
+elif [[ ! -x "$HOME/.local/bin/claude" ]]; then
+  echo "Installing Claude Code..."
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
 
 # Install proto if it isn't already installed (.bashrc handles PATH setup)
 if [[ ! -x "$HOME/.proto/bin/proto" ]]; then

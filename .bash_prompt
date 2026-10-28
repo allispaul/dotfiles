@@ -1,4 +1,5 @@
 #! /usr/bin/env false
+# shellcheck shell=bash
 # Note, this script should be source'd, not invoked as a command.
 # Therefore, invocation as a command returns an error code 1.
 

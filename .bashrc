@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+# Homebrew (set up before the interactive check so non-interactive shells get it too)
+case "$(uname -s)" in
+Darwin) BREW_BIN="/opt/homebrew/bin/brew" ;;
+Linux) BREW_BIN="/home/linuxbrew/.linuxbrew/bin/brew" ;;
+esac
+if [[ -x "$BREW_BIN" ]]; then
+  eval "$("$BREW_BIN" shellenv)"
+  [[ -d "$HOMEBREW_PREFIX/opt/llvm/bin" ]] && export PATH="$HOMEBREW_PREFIX/opt/llvm/bin:$PATH"
+fi
+unset BREW_BIN
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -76,6 +87,7 @@ eval "$(uv generate-shell-completion bash)"
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Set prompt command
+# shellcheck disable=SC1091
 [[ -f "$HOME/.bash_prompt" ]] && source "$HOME/.bash_prompt"
 
 # Finally, run machine-specific setup
