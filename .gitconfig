@@ -20,5 +20,6 @@
 	clean = git-lfs clean -- %f
 [init]
 	defaultBranch = main
-[url "git@github.com:basetenlabs/"]
-	insteadOf = https://github.com/basetenlabs/
+# Machine-specific settings, written by bootstrap.sh (a missing file is ignored)
+[include]
+	path = ~/.gitconfig_local

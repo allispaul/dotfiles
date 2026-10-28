@@ -55,6 +55,11 @@ echo ""
 install_macos() {
   local brew_bin="/opt/homebrew/bin/brew"
 
+  # basetenlabs' private Homebrew tap clones in a sandbox that can't use gh's
+  # credential helper, so fetch basetenlabs repos over SSH on the Mac
+  git config --file "$HOME/.gitconfig_local" \
+    url."git@github.com:basetenlabs/".insteadOf https://github.com/basetenlabs/
+
   # Install Homebrew if it isn't already installed
   if [[ ! -x "$brew_bin" ]]; then
     echo "Installing Homebrew..."
@@ -219,6 +224,13 @@ install_linux() {
     unzip -q "$tmp_zip" -d "$local_opt/bat-extras"
     rm "$tmp_zip"
     ln -s "$local_opt/bat-extras/bin/batman" "$local_bin/batman"
+  fi
+
+  # Pods have no ssh client or GitHub key, so git uses gh's token over HTTPS.
+  # The empty value resets the generic helper for github.com.
+  if command -v gh &>/dev/null; then
+    git config --file "$HOME/.gitconfig_local" --replace-all credential.https://github.com.helper ''
+    git config --file "$HOME/.gitconfig_local" --add credential.https://github.com.helper '!gh auth git-credential'
   fi
 
   # Claude Code (installs to ~/.local/bin)
