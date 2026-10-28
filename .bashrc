@@ -21,6 +21,15 @@ else
 fi
 unset LOCAL_BIN
 
+# Containers often leave the locale unset, which makes tmux and TUIs fall back
+# to ASCII; ssh doesn't forward COLORTERM, so truecolor detection fails too
+if [[ "$(uname -s)" == "Linux" ]]; then
+  if [[ -z "${LANG:-}" ]] && locale -a 2>/dev/null | grep -qix 'C.utf-\?8'; then
+    export LANG=C.UTF-8
+  fi
+  export COLORTERM="${COLORTERM:-truecolor}"
+fi
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
