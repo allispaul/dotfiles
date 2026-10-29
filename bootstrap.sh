@@ -233,13 +233,16 @@ install_linux() {
     git config --file "$HOME/.gitconfig_local" --add credential.https://github.com.helper '!gh auth git-credential'
   fi
 
-  # Baseten's TRT-LLM fork (private, so it needs `gh auth login` first). Blobs
-  # are fetched on demand and LFS files skipped (`git lfs pull` gets them), since
-  # it's several GB. A failed clone shouldn't stop the rest of the boot.
+  # Baseten's TRT-LLM fork (private, so it needs `gh auth login` first), on the
+  # branch prod's image is built from (ENGINE_SHA in the monorepo's
+  # mp/baseten_dynamo/cache_aware_routing_trtllm/versions/trtllm.env), not the
+  # repo's default branch. Blobs are fetched on demand and LFS files skipped
+  # (`git lfs pull` gets them), since it's several GB. A failed clone shouldn't
+  # stop the rest of the boot.
   if [[ ! -d "$HOME/trt-llm" ]]; then
     if gh auth status &>/dev/null; then
       echo "Cloning basetenlabs/trt-llm..."
-      GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none \
+      GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none --branch b10-1.3.0rc29 \
         https://github.com/basetenlabs/trt-llm.git "$HOME/trt-llm" ||
         echo "WARNING: couldn't clone basetenlabs/trt-llm, skipping."
     else
