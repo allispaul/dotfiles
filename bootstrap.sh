@@ -233,21 +233,18 @@ install_linux() {
     git config --file "$HOME/.gitconfig_local" --add credential.https://github.com.helper '!gh auth git-credential'
   fi
 
-  # Baseten's engine forks (private, so they need `gh auth login` first). Blobs
+  # Baseten's TRT-LLM fork (private, so it needs `gh auth login` first). Blobs
   # are fetched on demand and LFS files skipped (`git lfs pull` gets them), since
-  # trt-llm is several GB. A failed clone shouldn't stop the rest of the boot.
-  local fork
-  if gh auth status &>/dev/null; then
-    for fork in trt-llm sglang; do
-      if [[ ! -d "$HOME/$fork" ]]; then
-        echo "Cloning basetenlabs/$fork..."
-        GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none \
-          "https://github.com/basetenlabs/$fork.git" "$HOME/$fork" ||
-          echo "WARNING: couldn't clone basetenlabs/$fork, skipping."
-      fi
-    done
-  else
-    echo "WARNING: gh isn't logged in, so skipping the basetenlabs fork clones."
+  # it's several GB. A failed clone shouldn't stop the rest of the boot.
+  if [[ ! -d "$HOME/trt-llm" ]]; then
+    if gh auth status &>/dev/null; then
+      echo "Cloning basetenlabs/trt-llm..."
+      GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none \
+        https://github.com/basetenlabs/trt-llm.git "$HOME/trt-llm" ||
+        echo "WARNING: couldn't clone basetenlabs/trt-llm, skipping."
+    else
+      echo "WARNING: gh isn't logged in, so skipping the basetenlabs/trt-llm clone."
+    fi
   fi
 
   # Claude Code (installs to ~/.local/bin)
