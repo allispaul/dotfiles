@@ -233,6 +233,23 @@ install_linux() {
     git config --file "$HOME/.gitconfig_local" --add credential.https://github.com.helper '!gh auth git-credential'
   fi
 
+  # Baseten's engine forks (private, so they need `gh auth login` first). Blobs
+  # are fetched on demand and LFS files skipped (`git lfs pull` gets them), since
+  # trt-llm is several GB. A failed clone shouldn't stop the rest of the boot.
+  local fork
+  if gh auth status &>/dev/null; then
+    for fork in trt-llm sglang; do
+      if [[ ! -d "$HOME/$fork" ]]; then
+        echo "Cloning basetenlabs/$fork..."
+        GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none \
+          "https://github.com/basetenlabs/$fork.git" "$HOME/$fork" ||
+          echo "WARNING: couldn't clone basetenlabs/$fork, skipping."
+      fi
+    done
+  else
+    echo "WARNING: gh isn't logged in, so skipping the basetenlabs fork clones."
+  fi
+
   # Claude Code (installs to ~/.local/bin)
   if [[ ! -x "$local_bin/claude" ]]; then
     echo "Installing Claude Code..."
