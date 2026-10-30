@@ -226,30 +226,6 @@ install_linux() {
     ln -s "$local_opt/bat-extras/bin/batman" "$local_bin/batman"
   fi
 
-  # Pods have no ssh client or GitHub key, so git uses gh's token over HTTPS.
-  # The empty value resets the generic helper for github.com.
-  if command -v gh &>/dev/null; then
-    git config --file "$HOME/.gitconfig_local" --replace-all credential.https://github.com.helper ''
-    git config --file "$HOME/.gitconfig_local" --add credential.https://github.com.helper '!gh auth git-credential'
-  fi
-
-  # Baseten's TRT-LLM fork (private, so it needs `gh auth login` first), on the
-  # branch prod's image is built from (ENGINE_SHA in the monorepo's
-  # mp/baseten_dynamo/cache_aware_routing_trtllm/versions/trtllm.env), not the
-  # repo's default branch. Blobs are fetched on demand and LFS files skipped
-  # (`git lfs pull` gets them), since it's several GB. A failed clone shouldn't
-  # stop the rest of the boot.
-  if [[ ! -d "$HOME/trt-llm" ]]; then
-    if gh auth status &>/dev/null; then
-      echo "Cloning basetenlabs/trt-llm..."
-      GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none --branch b10-1.3.0rc29 \
-        https://github.com/basetenlabs/trt-llm.git "$HOME/trt-llm" ||
-        echo "WARNING: couldn't clone basetenlabs/trt-llm, skipping."
-    else
-      echo "WARNING: gh isn't logged in, so skipping the basetenlabs/trt-llm clone."
-    fi
-  fi
-
   # Claude Code (installs to ~/.local/bin)
   if [[ ! -x "$local_bin/claude" ]]; then
     echo "Installing Claude Code..."
@@ -271,6 +247,14 @@ esac
 if [[ ! -x "$HOME/.proto/bin/proto" ]]; then
   echo "Installing proto..."
   bash <(curl -fsSL https://moonrepo.dev/install/proto.sh) --yes --no-modify-profile
+fi
+
+# Baseten's dev pods run in the mp-devenv namespace. The service account's
+# namespace file is visible from any session; POD_NAMESPACE isn't over ssh.
+if [[ "$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)" == mp-devenv ||
+  "${POD_NAMESPACE:-}" == mp-devenv ]]; then
+  echo "Baseten dev pod detected, running baseten-pod.sh..."
+  "$DOTFILES_DIR/baseten-pod.sh"
 fi
 
 echo ""
