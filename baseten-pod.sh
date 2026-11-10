@@ -29,22 +29,24 @@ if [[ -f "$pvk_token" ]]; then
     '!f() { test "$1" = get && printf "username=allispaul\npassword=%s\n" "$(cat ~/.config/git-tokens/allispaul)"; }; f'
 fi
 
-# A failed clone shouldn't stop the rest of the setup.
+# A failed clone shouldn't stop the rest of the setup. --progress because
+# pod-auth.sh runs this without a TTY, where git otherwise stays silent.
 clone_basetenlabs() {
   local repo="$1" dest="$2"
   shift 2
   [[ -d "$dest" ]] && return
   echo "Cloning basetenlabs/$repo..."
-  git clone "$@" "https://github.com/basetenlabs/$repo.git" "$dest" ||
+  git clone --progress "$@" "https://github.com/basetenlabs/$repo.git" "$dest" ||
     echo "WARNING: couldn't clone basetenlabs/$repo, skipping."
 }
 
 if gh auth status &>/dev/null; then
-  clone_basetenlabs baseten "$HOME/baseten"
+  # Both repos are several GB, so blobs are fetched on demand and LFS files
+  # skipped (`git lfs pull` gets them).
+  GIT_LFS_SKIP_SMUDGE=1 clone_basetenlabs baseten "$HOME/baseten" --filter=blob:none
   # On the branch prod's image is built from (ENGINE_SHA in the monorepo's
   # mp/baseten_dynamo/cache_aware_routing_trtllm/versions/trtllm.env), not the
-  # repo's default branch. Blobs are fetched on demand and LFS files skipped
-  # (`git lfs pull` gets them), since it's several GB.
+  # repo's default branch.
   GIT_LFS_SKIP_SMUDGE=1 clone_basetenlabs trt-llm "$HOME/trt-llm" --filter=blob:none --branch b10-1.3.0rc29
 else
   echo "WARNING: gh isn't logged in, so skipping the basetenlabs clones. Run pod-auth.sh <pod> on your Mac."
