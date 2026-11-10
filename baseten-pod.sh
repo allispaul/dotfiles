@@ -1,9 +1,25 @@
 #!/usr/bin/env bash
-# Baseten dev pod setup: point git's GitHub credentials at the PATs pod-auth.sh
-# puts on the pod, and clone Baseten's repos. bootstrap.sh runs this on dev
-# pods, and pod-auth.sh runs it again once the PATs are in place. Safe to rerun.
+# Baseten dev pod setup: install the pod's extra apt packages, point git's
+# GitHub credentials at the PATs pod-auth.sh puts on the pod, and clone
+# Baseten's repos. bootstrap.sh runs this on dev pods, and pod-auth.sh runs it
+# again once the PATs are in place. Safe to rerun.
 
 set -euo pipefail
+
+# Use sudo unless we're already root (as on many containers)
+sudo=""
+if [[ $EUID -ne 0 ]]; then
+  sudo="sudo"
+fi
+
+apt_packages=(
+  cuda-compat-13-4
+  python3.12-venv
+)
+
+echo "Installing pod apt packages..."
+$sudo apt-get update
+$sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y "${apt_packages[@]}"
 
 if ! command -v gh &>/dev/null; then
   echo "ERROR: gh isn't installed."
