@@ -92,6 +92,11 @@ if command -v nvim &>/dev/null; then
   alias vim='nvim'
 fi
 
+# /teachme lesson without prompt suggestions (they can give away quiz answers)
+teachme() {
+  CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false claude "/teachme${*:+ $*}"
+}
+
 # Bash tool integration setup
 
 if command -v fzf &>/dev/null; then
