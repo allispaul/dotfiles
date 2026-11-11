@@ -2,7 +2,7 @@
 # Log a Baseten dev pod into GitHub with the PATs in this Mac's Keychain, then
 # run the pod's Baseten setup (baseten-pod.sh). Run on the Mac; safe to rerun,
 # e.g. after rotating a PAT. The PATs go over kubectl's stdin, never argv.
-# Usage: ./pod-auth.sh <pod>   (KUBECONFIG picks the cluster; defaults to vul-sea-mpdev-1)
+# Usage: ./pod-auth.sh <pod>   (targets the current kube context; switch with `intertubin clusters use`)
 
 set -euo pipefail
 
@@ -11,7 +11,7 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 pod="$1"
-export KUBECONFIG="${KUBECONFIG:-$HOME/.rcli/kubeconfig/tailscale/vul-sea-mpdev-1.yaml}"
+echo "Using kube context $(kubectl config current-context)"
 
 pod_exec() {
   kubectl -n mp-devenv exec -i "$pod" -- "$@"
